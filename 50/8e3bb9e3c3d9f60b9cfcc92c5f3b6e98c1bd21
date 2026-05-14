@@ -1,0 +1,30 @@
+app/(dashboard)/scans/[id]/page.tsx
+  s_11e99187cc70e1::t_400fb40cb6cd24 961
+  s_b16f14ad01f1ad::t_6a0955c477609f 17-23,25,230-237,403-406,599-635,735-737,943-956,958-960,962-974
+lib/db/client.ts
+  s_11e99187cc70e1::t_030d4fe1162704 1,5-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "508e3bb9e3c3d9f60b9cfcc92c5f3b6e98c1bd21",
+  "prompts": {},
+  "sessions": {
+    "s_11e99187cc70e1": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1daf4dc0cffejaegItPQ6guWxB",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Chris <92900301+chrisdadev13@users.noreply.github.com>"
+    },
+    "s_b16f14ad01f1ad": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1daf71646ffempGMTrA5tzB7vI",
+        "model": "gpt-5.4"
+      },
+      "human_author": "Chris <92900301+chrisdadev13@users.noreply.github.com>"
+    }
+  }
+}
