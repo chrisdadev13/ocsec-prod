@@ -14,7 +14,15 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {
+  Empty,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from "@/components/ui/empty";
 import { Input } from "@/components/ui/input";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
@@ -219,6 +227,14 @@ const ALL_SEVERITIES: readonly AgentSeverity[] = [
   "BUG",
 ];
 
+const ACTIVE_SCAN_STATUSES = [
+  "pending",
+  "cloning",
+  "scanning",
+  "ingesting",
+  "attacking",
+] as const;
+
 function createEmptyReport(id: string): SecurityScanReport {
   return {
     projectId: id,
@@ -382,6 +398,10 @@ function formatDurationMs(ms: number): string {
   const m = Math.floor(s / 60);
   const rem = s - m * 60;
   return `${m}m ${rem.toFixed(0)}s`;
+}
+
+function isActiveScanStatus(status: string): boolean {
+  return (ACTIVE_SCAN_STATUSES as readonly string[]).includes(status);
 }
 
 function cleanMarkdownishText(value: string): string {
@@ -576,6 +596,43 @@ function FindingCard({
   );
 }
 
+function ScanStatusPanel({
+  title,
+  description,
+  loading = false,
+}: {
+  title: string;
+  description: string;
+  loading?: boolean;
+}) {
+  return (
+    <Empty className="border-border bg-muted/20 mt-4 min-h-[18rem] border py-10">
+      <EmptyMedia
+        variant="icon"
+        className={cn(
+          "size-12 bg-background",
+          loading && "animate-pulse",
+        )}
+      >
+        <MagnifyingGlassIcon className="text-muted-foreground size-5" />
+      </EmptyMedia>
+      <EmptyHeader>
+        <EmptyTitle className="text-base">{title}</EmptyTitle>
+        <EmptyDescription className="max-w-md text-sm">
+          {description}
+        </EmptyDescription>
+      </EmptyHeader>
+      {loading ? (
+        <div className="mt-2 flex w-full max-w-sm flex-col gap-2">
+          <Skeleton className="h-3 w-full" />
+          <Skeleton className="h-3 w-5/6" />
+          <Skeleton className="h-3 w-2/3" />
+        </div>
+      ) : null}
+    </Empty>
+  );
+}
+
 export default function ScanDetailPage() {
   const params = useParams<{ id: string }>();
   const id = decodeURIComponent(params.id ?? "");
@@ -675,6 +732,9 @@ export default function ScanDetailPage() {
   }, [allFindings, query, severityFilter, sortKey]);
 
   const { summary } = report;
+  const hasActiveFilters = severityFilter !== "all" || query.trim().length > 0;
+  const scanInProgress = isLoading || isActiveScanStatus(report.status);
+  const hasAnyFindings = summary.totalFindings > 0;
 
   return (
     <div className="bg-background text-foreground flex min-h-0 flex-1 flex-col">
@@ -711,12 +771,6 @@ export default function ScanDetailPage() {
             </TabsList>
 
             <TabsContent value="triage" className="mt-0">
-              {isLoading ? (
-                <p className="text-muted-foreground text-sm">
-                  Loading findings…
-                </p>
-              ) : null}
-
               {error ? (
                 <p className="text-destructive text-sm">
                   {error instanceof Error ? error.message : "Unknown error"}
@@ -886,23 +940,38 @@ export default function ScanDetailPage() {
                 </div>
               </div>
 
-              <ul
-                className="flex flex-col gap-3 mt-4"
-                aria-label="Security findings"
-              >
-                {filteredFindings.map((item) => (
-                  <FindingCard
-                    key={item.key}
-                    item={item}
-                    defaultOpen={filteredFindings.length <= 3}
-                  />
-                ))}
-              </ul>
+              {filteredFindings.length > 0 ? (
+                <ul
+                  className="mt-4 flex flex-col gap-3"
+                  aria-label="Security findings"
+                >
+                  {filteredFindings.map((item) => (
+                    <FindingCard
+                      key={item.key}
+                      item={item}
+                      defaultOpen={filteredFindings.length <= 3}
+                    />
+                  ))}
+                </ul>
+              ) : null}
 
-              {filteredFindings.length === 0 ? (
-                <p className="text-muted-foreground py-8 text-center text-sm">
-                  No findings match your filters.
-                </p>
+              {filteredFindings.length === 0 && !error ? (
+                scanInProgress && !hasActiveFilters ? (
+                  <ScanStatusPanel
+                    title="Analysis in progress"
+                    description="We're still reviewing the target and findings will appear here as analysis completes."
+                    loading
+                  />
+                ) : hasActiveFilters ? (
+                 <p className="text-muted-foreground py-8 text-center text-sm">
+                   No findings match your filters.
+                 </p>
+                ) : !hasAnyFindings ? (
+                  <ScanStatusPanel
+                    title="No findings yet"
+                    description="No issues have been surfaced for this scan yet. If another analysis run starts, results will appear here automatically."
+                  />
+                ) : null
               ) : null}
             </TabsContent>
 
