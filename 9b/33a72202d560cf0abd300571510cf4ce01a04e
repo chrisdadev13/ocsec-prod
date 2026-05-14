@@ -1,0 +1,33 @@
+app/auth/page-client.tsx
+  s_264db0c416c443::t_8e4e1912882ba1 1-34
+lib/auth/client.ts
+  s_264db0c416c443::t_2430676660ab92 3-8,10
+app/auth/page.tsx
+  s_264db0c416c443::t_8e4e1912882ba1 4,16
+  s_264db0c416c443::t_2430676660ab92 17
+  s_df26227a9b5d64::t_d71544e477a3bd 1-3,6-10,12-15
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.4.8",
+  "base_commit_sha": "9b33a72202d560cf0abd300571510cf4ce01a04e",
+  "prompts": {},
+  "sessions": {
+    "s_264db0c416c443": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1daff8e8fffezEDVHp4EXpOyFZ",
+        "model": "gpt-5.4-mini"
+      },
+      "human_author": "Chris <92900301+chrisdadev13@users.noreply.github.com>"
+    },
+    "s_df26227a9b5d64": {
+      "agent_id": {
+        "tool": "opencode",
+        "id": "ses_1dafb1902ffe9oiiEuk1bEpLpV",
+        "model": "gpt-5.4-mini"
+      },
+      "human_author": "Chris <92900301+chrisdadev13@users.noreply.github.com>"
+    }
+  }
+}
